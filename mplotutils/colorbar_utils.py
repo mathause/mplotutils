@@ -317,11 +317,4 @@ def _parse_shift_shrink(shift, shrink):
     
     return shift, shrink
 
-
-# test code for _parse_shift_shrink
-assert _parse_shift_shrink('symmetric', None) == (0., 0.)
-assert _parse_shift_shrink('symmetric', 1) == (0.5, 1)
-assert _parse_shift_shrink(1, None) == (1, 1)
-assert _parse_shift_shrink(1, 1) == (1, 1)
-
 # ==================================================================================================
