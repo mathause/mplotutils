@@ -301,20 +301,19 @@ def _parse_shift_shrink(shift, shrink):
             shrink = 0
 
         shift = shrink / 2.
-    
+
     else:
         if shrink is None:
             shrink = shift
-            
-            
+
     assert (shift >= 0.) & (shift <= 1.), "'shift' must be in 0...1"
     assert (shrink >= 0.) & (shrink <= 1.), "'shrink' must be in 0...1"
 
     if shift > shrink:
-        msg = ("Warning: 'shift' is larger than 'shrink', colorbar\n" 
+        msg = ("Warning: 'shift' is larger than 'shrink', colorbar\n"
                "will extend beyond the axes!")
         print(msg)
-    
+
     return shift, shrink
 
 # ==================================================================================================

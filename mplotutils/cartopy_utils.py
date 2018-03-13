@@ -9,7 +9,7 @@ import shapely.geometry as sgeom
 
 from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
 
-# ==================================================================================================
+# =============================================================================
 
 
 def sample_data_3d(nlons, nlats):
@@ -32,7 +32,7 @@ def sample_data_3d(nlons, nlats):
     
     return lon, lat, data
 
-# ==================================================================================================
+# =============================================================================
 
 
 # from xarray
@@ -77,7 +77,7 @@ def _infer_interval_breaks(coord, axis=0):
     return np.concatenate([first, coord[trim_last] + deltas, last], axis=axis)
 
 
-# ==================================================================================================
+# =============================================================================
 
 
 def cyclic_dataarray(da, coord='lon'):
