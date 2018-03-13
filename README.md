@@ -5,6 +5,10 @@ helper functions for cartopy and matplotlib
 
 ## Versions
 
+### 0.2.0 (unreleased)
+
+ * add `_is_monotonic` to `infer_interval_breaks`
+
 ### 0.1.0 (13.03.2018)
 
  * Functionality as developped for [pyvis](https://github.com/C2SM/pyvis/) (see below), packed into a module.

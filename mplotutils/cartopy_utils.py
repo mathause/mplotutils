@@ -66,6 +66,15 @@ def _infer_interval_breaks(coord, axis=0):
     array([[-0.5,  0.5,  1.5],
            [ 2.5,  3.5,  4.5]])
     """
+
+    if not _is_monotonic(coord, axis=axis):
+        raise ValueError("The input coordinate is not sorted in increasing "
+                         "order along axis %d. This can lead to unexpected "
+                         "results. Consider calling the `sortby` method on "
+                         "the input DataArray. To plot data with categorical "
+                         "axes, consider using the `heatmap` function from "
+                         "the `seaborn` statistical plotting library." % axis)
+
     coord = np.asarray(coord)
     deltas = 0.5 * np.diff(coord, axis=axis)
     if deltas.size == 0:
@@ -75,6 +84,30 @@ def _infer_interval_breaks(coord, axis=0):
     trim_last = tuple(slice(None, -1) if n == axis else slice(None)
                       for n in range(coord.ndim))
     return np.concatenate([first, coord[trim_last] + deltas, last], axis=axis)
+
+
+# from xarray
+def _is_monotonic(coord, axis=0):
+    """
+    >>> _is_monotonic(np.array([0, 1, 2]))
+    True
+    >>> _is_monotonic(np.array([2, 1, 0]))
+    True
+    >>> _is_monotonic(np.array([0, 2, 1]))
+    False
+    """
+    coord = np.asarray(coord)
+
+    if coord.shape[axis] < 3:
+        return True
+    else:
+        n = coord.shape[axis]
+        delta_pos = (coord.take(np.arange(1, n), axis=axis) >=
+                     coord.take(np.arange(0, n - 1), axis=axis))
+        delta_neg = (coord.take(np.arange(1, n), axis=axis) <=
+                     coord.take(np.arange(0, n - 1), axis=axis))
+    
+    return np.all(delta_pos) or np.all(delta_neg)
 
 
 # =============================================================================
