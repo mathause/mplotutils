@@ -1,9 +1,9 @@
 
 from pytest import raises
 
-from mplotutils import (resize_colorbar_vert,
-                        resize_colorbar_horz,
-                        _parse_shift_shrink)
+from mplotutils.colorbar_utils import (resize_colorbar_vert,
+                                       resize_colorbar_horz,
+                                       _parse_shift_shrink)
 
 
 
