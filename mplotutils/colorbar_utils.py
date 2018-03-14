@@ -1,5 +1,5 @@
 
-def resize_colorbar_vert(cbax, ax1, ax2=None, size=0.04, pad=0.05,
+def resize_colorbar_vert(cbax, ax1, ax2=None, size=0.04, pad=None,
                          shift='symmetric', shrink=None):
     """
     automatically resize colorbars on draw
@@ -113,6 +113,10 @@ def resize_colorbar_vert(cbax, ax1, ax2=None, size=0.04, pad=0.05,
     
     shift, shrink = _parse_shift_shrink(shift, shrink)
 
+    # default mpl setting
+    if pad is None:
+        pad = 0.05
+
     # swap axes if ax1 is above ax2
     if ax2 is not None:
         posn = ax1.get_position()
@@ -148,7 +152,7 @@ def resize_colorbar_vert(cbax, ax1, ax2=None, size=0.04, pad=0.05,
 # ====================================
 
 
-def resize_colorbar_horz(cbax, ax1, ax2=None, size=0.05, pad=0.05,
+def resize_colorbar_horz(cbax, ax1, ax2=None, size=0.05, pad=None,
                          shift='symmetric', shrink=None):
     """
     automatically resize colorbars on draw
@@ -262,6 +266,10 @@ def resize_colorbar_horz(cbax, ax1, ax2=None, size=0.05, pad=0.05,
         
     shift, shrink = _parse_shift_shrink(shift, shrink)
     
+    # default mpl setting
+    if pad is None:
+        pad = 0.15
+
     if ax2 is not None:
         posn = ax1.get_position()
         posn2 = ax2.get_position()
