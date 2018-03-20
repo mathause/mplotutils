@@ -1,6 +1,8 @@
 import seaborn as sns
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import numpy as np
+import six
 
 from matplotlib.colors import from_levels_and_colors
 
@@ -26,7 +28,9 @@ def from_levels_and_cmap(levels, cmap, extend='neither'):
       Adapted from xarray.
 
     """
-    
+    if np.isscalar(levels):
+        raise ValueError("'levels' must be a list of levels")
+
     if extend == 'both':
         ext_n = 2
     elif extend in ['min', 'max']:
@@ -34,11 +38,52 @@ def from_levels_and_cmap(levels, cmap, extend='neither'):
     else:
         ext_n = 0
 
+
+
     # subtract 1 because there is one less level than numbers
-    pal = sns.color_palette(cmap, n_colors=len(levels) + ext_n - 1)
+    n_colors = len(levels) + ext_n - 1
+    
+    pal = _color_palette(cmap, n_colors)
+
     cmap, norm = from_levels_and_colors(levels, pal, extend=extend)
     
     return cmap, norm
+
+# -----------------------------------------------------------------------------
+
+# _color_palette is adapted from xarray:
+# https://github.com/pydata/xarray/blob/v0.10.2/xarray/plot/utils.py#L110
+# Used under the terms of xarrays's license, see licenses/XARRAY_LICENSE.
+
+def _color_palette(cmap, n_colors):
+    import matplotlib.pyplot as plt
+    from matplotlib.colors import ListedColormap
+    colors_i = np.linspace(0, 1., n_colors)
+    if isinstance(cmap, (list, tuple)):
+        # we have a list of colors
+        cmap = ListedColormap(cmap, N=n_colors)
+        pal = cmap(colors_i)
+    elif isinstance(cmap, six.string_types):
+        # we have some sort of named palette
+        try:
+            # is this a matplotlib cmap?
+            cmap = plt.get_cmap(cmap)
+            pal = cmap(colors_i)
+        except ValueError:
+            # ValueError happens when mpl doesn't like a colormap, try seaborn
+            try:
+                from seaborn.apionly import color_palette
+                pal = color_palette(cmap, n_colors=n_colors)
+            except (ValueError, ImportError):
+                # or maybe we just got a single color as a string
+                cmap = ListedColormap([cmap], N=n_colors)
+                pal = cmap(colors_i)
+    else:
+        # cmap better be a LinearSegmentedColormap (e.g. viridis)
+        pal = cmap(colors_i)
+
+    return pal
+
 
 
 # =============================================================================

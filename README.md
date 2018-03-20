@@ -7,6 +7,7 @@ helper functions for cartopy and matplotlib
 
 ### 0.2.0 (unreleased)
 
+ * add `_color_palette` that selects colors from the whole range of the colormap. Previously we used the `seaborn` logic that excludes colors at the edge of the colorbar (closes GH:#1).
  * the colorbar functionality was entirely redesigned:
    * new top-level function `mpu.colorbar`
    * added `aspect` keyword which defines the ratio of long to short side
