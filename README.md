@@ -11,7 +11,7 @@ helper functions for cartopy and matplotlib
    * new top-level function `mpu.colorbar`
    * added `aspect` keyword which defines the ratio of long to short side
    * the default width/ height is now `aspect=20` (was `size=0.04`)
-   * `pad` and `size` are scaled by the width/ height of the axes
+   * `pad` and `size` are now scaled by the width/ height of the axes (was width/ height of the figure)
    * `pad` now uses the matplotlib default (0.05 for vertical bars and 0.15 for horizontal colorbars)
  * add `_is_monotonic` to `infer_interval_breaks`
 
