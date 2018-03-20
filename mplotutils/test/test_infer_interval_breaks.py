@@ -5,8 +5,7 @@ from numpy.testing import assert_array_equal # noqa: F401
 from pytest import raises
 
 from mplotutils.cartopy_utils import (infer_interval_breaks, 
-                                      _infer_interval_breaks,
-                                      _is_monotonic)
+                                      _infer_interval_breaks)
 
 
 def test__infer_interval_breaks():
@@ -26,8 +25,8 @@ def test__infer_interval_breaks():
     np.testing.assert_allclose(yref, y)
 
     # test that warning is raised for non-monotonic inputs
-    with raises(ValueError):
-        _infer_interval_breaks(np.array([0, 2, 1]))
+    # with raises(ValueError):
+    #     _infer_interval_breaks(np.array([0, 2, 1]))
 
 
 def test_infer_interval_breaks():
@@ -85,10 +84,14 @@ def test_infer_interval_breaks_clip():
 
 
 
-def test_is_monotonic():
+# def test_is_monotonic():
 
-    assert _is_monotonic(np.array([0, 1, 2]))
-
-    assert _is_monotonic(np.array([2, 1, 0]))
-
-    assert not _is_monotonic(np.array([0, 2, 1]))
+    # _is_monotonic(coord, axis=0):
+    """
+    >>> _is_monotonic(np.array([0, 1, 2]))
+    True
+    >>> _is_monotonic(np.array([2, 1, 0]))
+    True
+    >>> _is_monotonic(np.array([0, 2, 1]))
+    False
+    """
