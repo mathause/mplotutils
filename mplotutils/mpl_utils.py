@@ -11,7 +11,8 @@ from matplotlib.colors import from_levels_and_colors
 
 def from_levels_and_cmap(levels, cmap, extend='neither'):
     """
-    
+    create mpl colormap from levels and the name of the colorbar
+
     Parameters
     ----------
     levels : sequence of numbers
@@ -42,11 +43,11 @@ def from_levels_and_cmap(levels, cmap, extend='neither'):
 
     # subtract 1 because there is one less level than numbers
     n_colors = len(levels) + ext_n - 1
-    
+
     pal = _color_palette(cmap, n_colors)
 
     cmap, norm = from_levels_and_colors(levels, pal, extend=extend)
-    
+
     return cmap, norm
 
 # -----------------------------------------------------------------------------
@@ -94,7 +95,7 @@ def set_map_layout(axes, width=17.0):
     set figure height, given width
 
     Needs to be called after all plotting is done.
-       
+
     Parameters
     ----------
     axes : ndarray of (Geo)Axes
@@ -111,7 +112,7 @@ def set_map_layout(axes, width=17.0):
     else:
         # assumes the first of the axes is representative for all
         ax = axes.flat[0]
-    
+
     # read figure data
     f = ax.get_figure()
 
@@ -130,7 +131,7 @@ def set_map_layout(axes, width=17.0):
 
     # width of one plot, taking into account
     # left * wf, (1-right) * wf, ncol * wp, (1-ncol) * wp * wspace
-    wp = (width - width * (left + (1-right))) / (ncol + (ncol-1) * wspace) 
+    wp = (width - width * (left + (1-right))) / (ncol + (ncol-1) * wspace)
 
     # height of one plot
     hp = wp * aspect
@@ -155,6 +156,5 @@ def _get_label_attr(labelpad, size, weight):
 
     if weight is None:
         weight = mpl.rcParams['axes.labelweight']
-    
-    return labelpad, size, weight
 
+    return labelpad, size, weight
