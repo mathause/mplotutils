@@ -5,7 +5,9 @@ helper functions for cartopy and matplotlib
 
 ## Versions
 
-### 0.2.0 (unreleased)
+### 0.2.0 (01.06.2018)
+
+Mayor release, mostly introducing the new `colorbar` functionality.
 
  * add `_color_palette` that selects colors from the whole range of the colormap. Previously we used the `seaborn` logic that excludes colors at the edge of the colorbar (closes GH:#1).
  * the colorbar functionality was entirely redesigned:
