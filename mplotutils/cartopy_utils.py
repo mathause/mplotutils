@@ -14,7 +14,7 @@ from .mpl_utils import _get_label_attr
 # =============================================================================
 
 
-def sample_data_3d(nlons, nlats):
+def sample_data_map(nlons, nlats):
     """Returns `lons`, `lats`, and fake `data`
 
     adapted from:

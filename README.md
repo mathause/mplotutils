@@ -15,6 +15,7 @@ helper functions for cartopy and matplotlib
    * `pad` and `size` are now scaled by the width/ height of the axes (was width/ height of the figure)
    * `pad` now uses the matplotlib default (0.05 for vertical bars and 0.15 for horizontal colorbars)
  * add `_is_monotonic` to `infer_interval_breaks`
+ * renamed `sample_data_3d` to `sample_data_map`
 
 ### 0.1.0 (13.03.2018)
 
