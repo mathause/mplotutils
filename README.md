@@ -5,6 +5,11 @@ helper functions for cartopy and matplotlib
 
 ## Versions
 
+### 0.3.0
+
+ * Formatted with black and isort, checked with flake8.
+
+
 ### 0.2.0 (01.06.2018)
 
 Mayor release, mostly introducing the new `colorbar` functionality.
@@ -28,4 +33,3 @@ Mayor release, mostly introducing the new `colorbar` functionality.
 
 This package bases on functions developped for the [python visualisation workshop at C2SM](https://github.com/C2SM/pyvis/) (Part 3 -> `utils.py`).
 `utils.py` in turn is based on [mutils](https://github.com/mathause/mutils). 
-

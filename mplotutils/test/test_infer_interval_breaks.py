@@ -1,17 +1,14 @@
 import numpy as np
+from numpy.testing import assert_array_equal  # noqa: F401
 
-from numpy.testing import assert_array_equal # noqa: F401
-
-from pytest import raises
-
-from mplotutils.cartopy_utils import (infer_interval_breaks, 
-                                      _infer_interval_breaks)
+from mplotutils.cartopy_utils import _infer_interval_breaks, infer_interval_breaks
 
 
 def test__infer_interval_breaks():
     assert_array_equal([-0.5, 0.5, 1.5], _infer_interval_breaks([0, 1]))
-    assert_array_equal([-0.5, 0.5, 5.0, 9.5, 10.5],
-                       _infer_interval_breaks([0, 1, 9, 10]))
+    assert_array_equal(
+        [-0.5, 0.5, 5.0, 9.5, 10.5], _infer_interval_breaks([0, 1, 9, 10])
+    )
 
     # make a bounded 2D array that we will center and re-infer
     xref, yref = np.meshgrid(np.arange(6), np.arange(5))
@@ -30,7 +27,7 @@ def test__infer_interval_breaks():
 
 
 def test_infer_interval_breaks():
-    
+
     # 1D
     lon = np.arange(5, 356, 10)
     lat = np.arange(-85, 86, 10)
@@ -48,7 +45,7 @@ def test_infer_interval_breaks():
     xref, yref = np.meshgrid(np.arange(6), np.arange(5))
     cx = (xref[1:, 1:] + xref[:-1, :-1]) / 2
     cy = (yref[1:, 1:] + yref[:-1, :-1]) / 2
-    
+
     x, y = infer_interval_breaks(cx, cy)
 
     np.testing.assert_allclose(xref, x)
@@ -56,7 +53,7 @@ def test_infer_interval_breaks():
 
 
 def test_infer_interval_breaks_clip():
-    
+
     # no clip
     lon = np.arange(5, 356, 10)
     lat = np.arange(-90, 91, 10)
@@ -78,13 +75,9 @@ def test_infer_interval_breaks_clip():
     np.testing.assert_allclose(lon_expected, lon_result)
     np.testing.assert_allclose(lat_expected, lat_result)
 
-
-
     # 2D, as above
 
-
-
-# def test_is_monotonic():
+    # def test_is_monotonic():
 
     # _is_monotonic(coord, axis=0):
     """

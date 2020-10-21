@@ -1,21 +1,31 @@
 import matplotlib.pyplot as plt
 
 
-def colorbar(mappable, ax1, ax2=None, orientation='vertical', aspect=None,
-             size=None, pad=None, shift='symmetric', shrink=None, **kwargs):
+def colorbar(
+    mappable,
+    ax1,
+    ax2=None,
+    orientation="vertical",
+    aspect=None,
+    size=None,
+    pad=None,
+    shift="symmetric",
+    shrink=None,
+    **kwargs
+):
     """
     automatically resize colorbars on draw
-    
+
     See below for Example
-    
+
     Parameters
     ----------
     mappable : handle
-        The return value of 'ax.contourf', 'ax.pcolormesh' etc to 
+        The return value of 'ax.contourf', 'ax.pcolormesh' etc to
         which the colorbar applies.
     ax1 : Axes
         Axes to adjust the colorbar to.
-    ax2 : Axes, optional 
+    ax2 : Axes, optional
         If the colorbar should span more than one Axes. Default: None.
     orientation : 'vertical' | 'horizontal', optional
         Orientation of the colorbar. Default: 'vertical'.
@@ -36,15 +46,15 @@ def colorbar(mappable, ax1, ax2=None, orientation='vertical', aspect=None,
         See Note. Default: None.
 
     Note
-    ----   
-    
+    ----
+
     shift='symmetric', shrink=None  -> colorbar extends over the whole height
     shift='symmetric', shrink=0.1   -> colorbar is 10 % smaller, and centered
     shift=0., shrink=0.1            -> colorbar is 10 % smaller, and aligned
                                        with the bottom
     shift=0.1, shrink=None          -> colorbar is 10 % smaller, and aligned
-                                       with the top   
-    
+                                       with the top
+
     kwargs
     ------
     colorbar properties
@@ -101,40 +111,40 @@ def colorbar(mappable, ax1, ax2=None, orientation='vertical', aspect=None,
     import cartopy.crs as ccrs
 
     # example with 1 axes
-    
+
     f = plt.figure()
     ax = plt.axes(projection=ccrs.PlateCarree())
     h = ax.pcolormesh([[0, 1]])
-    
+
     ax.coastlines()
 
     mpu.colorbar(h, ax)
 
     ax.set_global()
 
-    
+
     # =========================
     # example with 2 axes
-    
+
     f, axes = plt.subplots(2, 1, subplot_kw=dict(projection=ccrs.Robinson()))
 
     for ax in axes:
-        ax.coastlines() 
+        ax.coastlines()
         ax.set_global()
         h = ax.pcolormesh([[0, 1]])
-    
+
     cbar = mpu.colorbar(h, axes[0], axes[1])
-    
+
     cbar.set_label('[°C]', labelpad=10)
 
-    
+
     # =========================
     # example with 3 axes & 2 colorbars
-    
+
     f, axes = plt.subplots(3, 1, subplot_kw=dict(projection=ccrs.Robinson()))
 
     for ax in axes:
-        ax.coastlines() 
+        ax.coastlines()
         ax.set_global()
 
     h0 = ax.pcolormesh([[0, 1]])
@@ -146,28 +156,28 @@ def colorbar(mappable, ax1, ax2=None, orientation='vertical', aspect=None,
     cbar = mpu.colorbar(h, axes[2], size=0.05)
 
     plt.draw()
-    
-    
+
+
     See also
     --------
     _resize_colorbar_horz
     """
 
-    orientations = ('vertical', 'horizontal')
+    orientations = ("vertical", "horizontal")
     msg = "orientation must be 'vertical' or 'horizontal'"
     assert orientation in orientations, msg
-    
+
     k = kwargs.keys()
-    if ('anchor' in k) or ('panchor' in k):
-        msg = ("'anchor' and 'panchor' keywords not "
-               "supported, use 'shrink' and 'shift'")
+    if ("anchor" in k) or ("panchor" in k):
+        msg = (
+            "'anchor' and 'panchor' keywords not " "supported, use 'shrink' and 'shift'"
+        )
         raise RuntimeError(msg)
 
     # ensure 'ax' does not end up in plt.colorbar(**kwargs)
-    if 'ax' in k:
+    if "ax" in k:
         # assume it is ax2 (it can't be ax1)
-        ax2 = kwargs.pop('ax')
-
+        ax2 = kwargs.pop("ax")
 
     f = ax1.get_figure()
 
@@ -179,43 +189,64 @@ def colorbar(mappable, ax1, ax2=None, orientation='vertical', aspect=None,
 
     cbar = plt.colorbar(mappable, orientation=orientation, cax=cbax, **kwargs)
 
-    if orientation == 'vertical':
-        func = _resize_colorbar_vert(cbax, ax1, ax2=ax2, aspect=aspect,
-                                     size=size, pad=pad, shift=shift,
-                                     shrink=shrink)
+    if orientation == "vertical":
+        func = _resize_colorbar_vert(
+            cbax,
+            ax1,
+            ax2=ax2,
+            aspect=aspect,
+            size=size,
+            pad=pad,
+            shift=shift,
+            shrink=shrink,
+        )
     else:
-        func = _resize_colorbar_horz(cbax, ax1, ax2=ax2, aspect=aspect,
-                                     size=size, pad=pad, shift=shift,
-                                     shrink=shrink)
+        func = _resize_colorbar_horz(
+            cbax,
+            ax1,
+            ax2=ax2,
+            aspect=aspect,
+            size=size,
+            pad=pad,
+            shift=shift,
+            shrink=shrink,
+        )
 
-    f.canvas.mpl_connect('draw_event', func)
+    f.canvas.mpl_connect("draw_event", func)
     f.canvas.draw()
 
     return cbar
 
-    
-    
+
 # ========================================================================
 
+
 def _get_cbax(f):
-    
+
     # when using f.add_axes(rect) with the same rect twice
     # it is the same axes, so we have to change rect
     # slightly each time this func is called
-        
+
     n_axes = len(f.get_axes())
-    pos_incr = n_axes / 10.
+    pos_incr = n_axes / 10.0
     return f.add_axes([0, 0, 0.1, 0.1 + pos_incr])
 
 
-
-def _resize_colorbar_vert(cbax, ax1, ax2=None, aspect=None, size=None,
-                         pad=None, shift='symmetric', shrink=None):
+def _resize_colorbar_vert(
+    cbax,
+    ax1,
+    ax2=None,
+    aspect=None,
+    size=None,
+    pad=None,
+    shift="symmetric",
+    shrink=None,
+):
     """
     automatically resize colorbars on draw
-    
+
     see 'colorbar'
-    
+
     Example
     -------
     import matplotlib.pyplot as plt
@@ -225,7 +256,7 @@ def _resize_colorbar_vert(cbax, ax1, ax2=None, aspect=None, size=None,
     f = plt.figure()
     ax = plt.axes(projection=ccrs.PlateCarree())
     h = ax.pcolormesh([[0, 1]])
-    
+
     ax.coastlines()
 
     cbax = f.add_axes([0, 0, 0.1, 0.1])
@@ -236,8 +267,8 @@ def _resize_colorbar_vert(cbax, ax1, ax2=None, aspect=None, size=None,
 
     ax.set_global()
 
-    plt.draw()    
-    
+    plt.draw()
+
     See also
     --------
     _resize_colorbar_horz
@@ -245,7 +276,7 @@ def _resize_colorbar_vert(cbax, ax1, ax2=None, aspect=None, size=None,
 
     shift, shrink = _parse_shift_shrink(shift, shrink)
 
-    size, aspect, pad = _parse_size_aspect_pad(size, aspect, pad, 'vertical')
+    size, aspect, pad = _parse_size_aspect_pad(size, aspect, pad, "vertical")
 
     # swap axes if ax1 is above ax2
     if ax2 is not None:
@@ -253,13 +284,13 @@ def _resize_colorbar_vert(cbax, ax1, ax2=None, aspect=None, size=None,
         posn2 = ax2.get_position()
 
         ax1, ax2 = (ax1, ax2) if posn1.y0 < posn2.y0 else (ax2, ax1)
-    
+
     if aspect is not None:
         anchor = (0, 0.5)
-        cbax.set_aspect(aspect, anchor=anchor, adjustable='box')
-    
+        cbax.set_aspect(aspect, anchor=anchor, adjustable="box")
+
     # inner function is called by event handler
-    def inner(event=None): 
+    def inner(event=None):
 
         posn1 = ax1.get_position()
 
@@ -286,22 +317,31 @@ def _resize_colorbar_vert(cbax, ax1, ax2=None, aspect=None, size=None,
 
     return inner
 
+
 # ====================================
 
 
-def _resize_colorbar_horz(cbax, ax1, ax2=None, aspect=None, size=None,
-                         pad=None, shift='symmetric', shrink=None):
+def _resize_colorbar_horz(
+    cbax,
+    ax1,
+    ax2=None,
+    aspect=None,
+    size=None,
+    pad=None,
+    shift="symmetric",
+    shrink=None,
+):
     """
     automatically resize colorbars on draw
-    
+
     see 'colorbar'
-    
+
     Example
     -------
     import matplotlib.pyplot as plt
     import mplotutils as mpu
     import cartopy.crs as ccrs
-    
+
     f = plt.figure()
     ax = plt.axes(projection=ccrs.PlateCarree())
 
@@ -324,7 +364,7 @@ def _resize_colorbar_horz(cbax, ax1, ax2=None, aspect=None, size=None,
 
     shift, shrink = _parse_shift_shrink(shift, shrink)
 
-    size, aspect, pad = _parse_size_aspect_pad(size, aspect, pad, 'horizontal')
+    size, aspect, pad = _parse_size_aspect_pad(size, aspect, pad, "horizontal")
 
     if ax2 is not None:
         posn1 = ax1.get_position()
@@ -336,12 +376,12 @@ def _resize_colorbar_horz(cbax, ax1, ax2=None, aspect=None, size=None,
     if aspect is not None:
         aspect = 1 / aspect
         anchor = (0.5, 1.0)
-        cbax.set_aspect(aspect, anchor=anchor, adjustable='box')
+        cbax.set_aspect(aspect, anchor=anchor, adjustable="box")
 
     def inner(event=None):
-        
+
         posn1 = ax1.get_position()
-        
+
         if ax2 is not None:
             posn2 = ax2.get_position()
             full_width = posn2.x0 - posn1.x0 + posn2.width
@@ -364,30 +404,34 @@ def _resize_colorbar_horz(cbax, ax1, ax2=None, aspect=None, size=None,
 
     return inner
 
+
 # ====================================
 
 
 def _parse_shift_shrink(shift, shrink):
 
-    if shift == 'symmetric':
+    if shift == "symmetric":
         if shrink is None:
             shrink = 0
 
-        shift = shrink / 2.
-        
+        shift = shrink / 2.0
+
     else:
         if shrink is None:
             shrink = shift
 
-    assert (shift >= 0.) & (shift <= 1.), "'shift' must be in 0...1"
-    assert (shrink >= 0.) & (shrink <= 1.), "'shrink' must be in 0...1"
+    assert (shift >= 0.0) & (shift <= 1.0), "'shift' must be in 0...1"
+    assert (shrink >= 0.0) & (shrink <= 1.0), "'shrink' must be in 0...1"
 
     if shift > shrink:
-        msg = ("Warning: 'shift' is larger than 'shrink', colorbar\n"
-               "will extend beyond the axes!")
+        msg = (
+            "Warning: 'shift' is larger than 'shrink', colorbar\n"
+            "will extend beyond the axes!"
+        )
         print(msg)
 
     return shift, shrink
+
 
 # ==================================================================================================
 
@@ -400,13 +444,13 @@ def _parse_size_aspect_pad(size, aspect, pad, orientation):
     # default is aspect=20
     if (size is None) and (aspect is None):
         aspect = 20
-    
+
     # we need a large size so it is not limiting for set_aspect
-    if (aspect is not None):
+    if aspect is not None:
         size = 10
-    
+
     # default mpl setting
     if pad is None:
-        pad = 0.05 if orientation == 'vertical' else 0.15
+        pad = 0.05 if orientation == "vertical" else 0.15
 
     return size, aspect, pad

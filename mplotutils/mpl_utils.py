@@ -1,15 +1,13 @@
-import seaborn as sns
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import six
-
 from matplotlib.colors import from_levels_and_colors
 
 # =============================================================================
 
 
-def from_levels_and_cmap(levels, cmap, extend='neither'):
+def from_levels_and_cmap(levels, cmap, extend="neither"):
     """
     create mpl colormap from levels and the name of the colorbar
 
@@ -32,14 +30,12 @@ def from_levels_and_cmap(levels, cmap, extend='neither'):
     if np.isscalar(levels):
         raise ValueError("'levels' must be a list of levels")
 
-    if extend == 'both':
+    if extend == "both":
         ext_n = 2
-    elif extend in ['min', 'max']:
+    elif extend in ["min", "max"]:
         ext_n = 1
     else:
         ext_n = 0
-
-
 
     # subtract 1 because there is one less level than numbers
     n_colors = len(levels) + ext_n - 1
@@ -50,16 +46,19 @@ def from_levels_and_cmap(levels, cmap, extend='neither'):
 
     return cmap, norm
 
+
 # -----------------------------------------------------------------------------
 
 # _color_palette is adapted from xarray:
 # https://github.com/pydata/xarray/blob/v0.10.2/xarray/plot/utils.py#L110
 # Used under the terms of xarrays's license, see licenses/XARRAY_LICENSE.
 
+
 def _color_palette(cmap, n_colors):
     import matplotlib.pyplot as plt
     from matplotlib.colors import ListedColormap
-    colors_i = np.linspace(0, 1., n_colors)
+
+    colors_i = np.linspace(0, 1.0, n_colors)
     if isinstance(cmap, (list, tuple)):
         # we have a list of colors
         cmap = ListedColormap(cmap, N=n_colors)
@@ -74,6 +73,7 @@ def _color_palette(cmap, n_colors):
             # ValueError happens when mpl doesn't like a colormap, try seaborn
             try:
                 from seaborn.apionly import color_palette
+
                 pal = color_palette(cmap, n_colors=n_colors)
             except (ValueError, ImportError):
                 # or maybe we just got a single color as a string
@@ -84,7 +84,6 @@ def _color_palette(cmap, n_colors):
         pal = cmap(colors_i)
 
     return pal
-
 
 
 # =============================================================================
@@ -128,20 +127,19 @@ def set_map_layout(axes, width=17.0):
     # get geometry tells how many subplots there are
     nrow, ncol, __ = ax.get_geometry()
 
-
     # width of one plot, taking into account
     # left * wf, (1-right) * wf, ncol * wp, (1-ncol) * wp * wspace
-    wp = (width - width * (left + (1-right))) / (ncol + (ncol-1) * wspace)
+    wp = (width - width * (left + (1 - right))) / (ncol + (ncol - 1) * wspace)
 
     # height of one plot
     hp = wp * aspect
 
     # height of figure
-    height = (hp * (nrow + ((nrow - 1) * hspace))) / (1. - (bottom + (1 - top)))
-
+    height = (hp * (nrow + ((nrow - 1) * hspace))) / (1.0 - (bottom + (1 - top)))
 
     f.set_figwidth(width / 2.54)
     f.set_figheight(height / 2.54)
+
 
 # =============================================================================
 
@@ -149,12 +147,12 @@ def set_map_layout(axes, width=17.0):
 def _get_label_attr(labelpad, size, weight):
 
     if labelpad is None:
-        labelpad = mpl.rcParams['axes.labelpad']
+        labelpad = mpl.rcParams["axes.labelpad"]
 
     if size is None:
-        size = mpl.rcParams['axes.labelsize']
+        size = mpl.rcParams["axes.labelsize"]
 
     if weight is None:
-        weight = mpl.rcParams['axes.labelweight']
+        weight = mpl.rcParams["axes.labelweight"]
 
     return labelpad, size, weight

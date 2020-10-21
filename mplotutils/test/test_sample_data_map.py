@@ -1,12 +1,13 @@
+import numpy as np
+
 from mplotutils import sample_data_map
 
-import numpy as np
 
 def test_data_shape():
 
     nlons = 10
     nlats = 20
-    
+
     lon, lat, data = sample_data_map(nlons, nlats)
 
     assert len(lon) == nlons

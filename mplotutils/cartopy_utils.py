@@ -1,13 +1,11 @@
 # code by M.Hauser
 
-import cartopy.util as cutil
 import cartopy.crs as ccrs
-import matplotlib as mpl
+import cartopy.util as cutil
 import matplotlib.pyplot as plt
 import numpy as np
 import shapely.geometry as sgeom
-
-from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
+from cartopy.mpl.gridliner import LATITUDE_FORMATTER, LONGITUDE_FORMATTER
 
 from .mpl_utils import _get_label_attr
 
@@ -20,29 +18,30 @@ def sample_data_map(nlons, nlats):
     adapted from:
     http://scitools.org.uk/cartopy/docs/v0.15/examples/axes_grid_basic.html
     """
-    
-    dlat = 180. / nlats / 2
-    dlon = 360. / nlons
 
-    lat = np.linspace(-90 + dlat, 90 - dlat, nlats)   
+    dlat = 180.0 / nlats / 2
+    dlon = 360.0 / nlons
+
+    lat = np.linspace(-90 + dlat, 90 - dlat, nlats)
     lon = np.linspace(0, 360 - dlon, nlons)
 
     lons, lats = np.meshgrid(np.deg2rad(lon), np.deg2rad(lat))
     wave = 0.75 * (np.sin(2 * lats) ** 8) * np.cos(4 * lons)
     mean = 0.5 * np.cos(2 * lats) * ((np.sin(2 * lats)) ** 2 + 2)
     data = wave + mean
-    
+
     return lon, lat, data
+
 
 # =============================================================================
 
 
 # from xarray
 def infer_interval_breaks(x, y, clip=False):
-    """"
+    """ "
     find edges of gridcells, given their centers
     """
-    
+
     if len(x.shape) == 1:
         x = _infer_interval_breaks(x)
         y = _infer_interval_breaks(y)
@@ -55,7 +54,7 @@ def infer_interval_breaks(x, y, clip=False):
 
     if clip:
         y = np.clip(y, -90, 90)
-        
+
     return x, y
 
 
@@ -70,12 +69,14 @@ def _infer_interval_breaks(coord, axis=0):
     """
 
     if not _is_monotonic(coord, axis=axis):
-        raise ValueError("The input coordinate is not sorted in increasing "
-                         "order along axis %d. This can lead to unexpected "
-                         "results. Consider calling the `sortby` method on "
-                         "the input DataArray. To plot data with categorical "
-                         "axes, consider using the `heatmap` function from "
-                         "the `seaborn` statistical plotting library." % axis)
+        raise ValueError(
+            "The input coordinate is not sorted in increasing "
+            "order along axis %d. This can lead to unexpected "
+            "results. Consider calling the `sortby` method on "
+            "the input DataArray. To plot data with categorical "
+            "axes, consider using the `heatmap` function from "
+            "the `seaborn` statistical plotting library." % axis
+        )
 
     coord = np.asarray(coord)
     deltas = 0.5 * np.diff(coord, axis=axis)
@@ -83,8 +84,9 @@ def _infer_interval_breaks(coord, axis=0):
         deltas = np.array(0.0)
     first = np.take(coord, [0], axis=axis) - np.take(deltas, [0], axis=axis)
     last = np.take(coord, [-1], axis=axis) + np.take(deltas, [-1], axis=axis)
-    trim_last = tuple(slice(None, -1) if n == axis else slice(None)
-                      for n in range(coord.ndim))
+    trim_last = tuple(
+        slice(None, -1) if n == axis else slice(None) for n in range(coord.ndim)
+    )
     return np.concatenate([first, coord[trim_last] + deltas, last], axis=axis)
 
 
@@ -104,19 +106,21 @@ def _is_monotonic(coord, axis=0):
         return True
     else:
         n = coord.shape[axis]
-        delta_pos = (coord.take(np.arange(1, n), axis=axis) >=
-                     coord.take(np.arange(0, n - 1), axis=axis))
-        delta_neg = (coord.take(np.arange(1, n), axis=axis) <=
-                     coord.take(np.arange(0, n - 1), axis=axis))
-    
+        delta_pos = coord.take(np.arange(1, n), axis=axis) >= coord.take(
+            np.arange(0, n - 1), axis=axis
+        )
+        delta_neg = coord.take(np.arange(1, n), axis=axis) <= coord.take(
+            np.arange(0, n - 1), axis=axis
+        )
+
     return np.all(delta_pos) or np.all(delta_neg)
 
 
 # =============================================================================
 
 
-def cyclic_dataarray(da, coord='lon'):
-    """ Add a cyclic coordinate point to a DataArray along a specified
+def cyclic_dataarray(da, coord="lon"):
+    """Add a cyclic coordinate point to a DataArray along a specified
     named coordinate dimension.
     >>> import xarray as xr
     >>> data = xr.DataArray([[1, 2, 3], [4, 5, 6]],
@@ -126,20 +130,20 @@ def cyclic_dataarray(da, coord='lon'):
     >>> print cd.data
     array([[1, 2, 3, 1],
            [4, 5, 6, 4]])
-           
+
     Note
     -----
     After: https://github.com/darothen/plot-all-in-ncfile/blob/master/plot_util.py
-    
+
     """
     import xarray as xr
-    
+
     assert isinstance(da, xr.DataArray)
 
     lon_idx = da.dims.index(coord)
-    cyclic_data, cyclic_coord = cutil.add_cyclic_point(da.values,
-                                                 coord=da.coords[coord],
-                                                 axis=lon_idx)
+    cyclic_data, cyclic_coord = cutil.add_cyclic_point(
+        da.values, coord=da.coords[coord], axis=lon_idx
+    )
 
     # Copy and add the cyclic coordinate and data
     new_coords = dict(da.coords)
@@ -156,7 +160,6 @@ def cyclic_dataarray(da, coord='lon'):
             new_da.coords[c].attrs[att] = da.coords[c].attrs[att]
 
     return new_da
-
 
 
 # =============================================================================
@@ -197,24 +200,33 @@ def ylabel_map(s, labelpad=None, size=None, weight=None, y=0.5, ax=None, **kwarg
     """
     if ax is None:
         ax = plt.gca()
-    
-    labelpad, size, weight = _get_label_attr(labelpad, size, weight)
-    
-    va = kwargs.pop('va', 'bottom')
-    ha = kwargs.pop('ha', 'center')
-    rotation = kwargs.pop('rotation', 'vertical')
-    rotation_mode = kwargs.pop('rotation_mode', 'anchor')
-    
-    transform = kwargs.pop('transform', ax.transAxes)
 
-    h = ax.annotate(s, xy=(0, y), xycoords=transform,
-                xytext=(-labelpad, 0), textcoords='offset points',
-                va=va, ha=ha, rotation=rotation,
-                rotation_mode=rotation_mode,
-                size=size, weight=weight,
-                **kwargs)
-    
+    labelpad, size, weight = _get_label_attr(labelpad, size, weight)
+
+    va = kwargs.pop("va", "bottom")
+    ha = kwargs.pop("ha", "center")
+    rotation = kwargs.pop("rotation", "vertical")
+    rotation_mode = kwargs.pop("rotation_mode", "anchor")
+
+    transform = kwargs.pop("transform", ax.transAxes)
+
+    h = ax.annotate(
+        s,
+        xy=(0, y),
+        xycoords=transform,
+        xytext=(-labelpad, 0),
+        textcoords="offset points",
+        va=va,
+        ha=ha,
+        rotation=rotation,
+        rotation_mode=rotation_mode,
+        size=size,
+        weight=weight,
+        **kwargs
+    )
+
     return h
+
 
 # =============================================================================
 
@@ -254,34 +266,52 @@ def xlabel_map(s, labelpad=None, size=None, weight=None, x=0.5, ax=None, **kwarg
     """
     if ax is None:
         ax = plt.gca()
-    
-    labelpad, size, weight = _get_label_attr(labelpad, size, weight)
-    
-    va = kwargs.pop('va', 'top')
-    ha = kwargs.pop('ha', 'center')
-    rotation = kwargs.pop('rotation', 'horizontal')
-    rotation_mode = kwargs.pop('rotation_mode', 'anchor')
-    
-    transform = kwargs.pop('transform', ax.transAxes)
 
-    h = ax.annotate(s, xy=(x, 0), xycoords=transform,
-                xytext=(0, -labelpad), textcoords='offset points',
-                va=va, ha=ha, rotation=rotation,
-                rotation_mode=rotation_mode,
-                size=size, weight=weight,
-                **kwargs)
-    
+    labelpad, size, weight = _get_label_attr(labelpad, size, weight)
+
+    va = kwargs.pop("va", "top")
+    ha = kwargs.pop("ha", "center")
+    rotation = kwargs.pop("rotation", "horizontal")
+    rotation_mode = kwargs.pop("rotation_mode", "anchor")
+
+    transform = kwargs.pop("transform", ax.transAxes)
+
+    h = ax.annotate(
+        s,
+        xy=(x, 0),
+        xycoords=transform,
+        xytext=(0, -labelpad),
+        textcoords="offset points",
+        va=va,
+        ha=ha,
+        rotation=rotation,
+        rotation_mode=rotation_mode,
+        size=size,
+        weight=weight,
+        **kwargs
+    )
+
     return h
+
 
 # =============================================================================
 
 
-def yticklabels(y_ticks, labelpad=None, size=None, weight=None, ax=None,
-                ha='right', va='center', bbox_props=dict(ec='none', fc='none'), **kwargs):
-    
+def yticklabels(
+    y_ticks,
+    labelpad=None,
+    size=None,
+    weight=None,
+    ax=None,
+    ha="right",
+    va="center",
+    bbox_props=dict(ec="none", fc="none"),
+    **kwargs
+):
+
     """
     draw yticklabels on map plots - may or may not work
-    
+
     Parameters
     ----------
     y_ticks : 1D array
@@ -305,18 +335,17 @@ def yticklabels(y_ticks, labelpad=None, size=None, weight=None, ax=None,
         Properties of the bounding box. Default: dict(ec='none', fc='none')
     kwargs : additional arguments
         Passed to ax.annotate
-    
+
     """
-    
 
     plt.draw()
-    
+
     # get ax if necessary
     if ax is None:
         ax = plt.gca()
 
     labelpad, size, weight = _get_label_attr(labelpad, size, weight)
-    
+
     boundary_pc = _get_boundary_platecarree(ax)
 
     # ensure labels are on rhs and not in the middle
@@ -324,47 +353,67 @@ def yticklabels(y_ticks, labelpad=None, size=None, weight=None, ax=None,
         lonmin, lonmax = -180, 180
     else:
         lonmin, lonmax = 0, 360
-    
+
     # get the y_limit
-    y_lim = boundary_pc.bounds[1::2] 
-    
+    y_lim = boundary_pc.bounds[1::2]
+
     # remove all points not on map for labeling
     y_label_points = [y for y in y_ticks if y_lim[0] <= y <= y_lim[1]]
-    
+
     if not y_label_points:
-        msg = ('WARN: no points found for ylabel\n'
-               'y_lim is: {:0.2f} to {:0.2f}'.format(y_lim[0], y_lim[1]))
+        msg = (
+            "WARN: no points found for ylabel\n"
+            "y_lim is: {:0.2f} to {:0.2f}".format(y_lim[0], y_lim[1])
+        )
         print(msg)
-        
+
     # get a transform instance that mpl understands
     transform = ccrs.PlateCarree()._as_mpl_transform(ax)
 
     if np.isscalar(labelpad):
         labelpad = [labelpad, 0]
-    
-    # loop through points    
+
+    # loop through points
     for y in y_label_points:
 
         msg = LATITUDE_FORMATTER(y)
-        
+
         x = _determine_intersection(boundary_pc, [lonmin, y], [lonmax, y])
-    
+
         if x.size > 0:
-            x = x[0, 0]                
+            x = x[0, 0]
             lp = labelpad[0] + labelpad[1] * np.abs(y) / 90
-            
-            h = ax.annotate(msg, xy=(x, y), xycoords=transform, ha=ha, va=va, size=size,
-                            weight=weight, xytext=(-lp, 0), textcoords='offset points',
-                            bbox=bbox_props, **kwargs)
-    
+
+            ax.annotate(
+                msg,
+                xy=(x, y),
+                xycoords=transform,
+                ha=ha,
+                va=va,
+                size=size,
+                weight=weight,
+                xytext=(-lp, 0),
+                textcoords="offset points",
+                bbox=bbox_props,
+                **kwargs
+            )
 
 
-def xticklabels(x_ticks, labelpad=None, size=None, weight=None, ax=None,
-                ha='center', va='top', bbox_props=dict(ec='none', fc='none'), **kwargs):
-    
+def xticklabels(
+    x_ticks,
+    labelpad=None,
+    size=None,
+    weight=None,
+    ax=None,
+    ha="center",
+    va="top",
+    bbox_props=dict(ec="none", fc="none"),
+    **kwargs
+):
+
     """
     draw xticklabels on map plots - may or may not work
-    
+
     Parameters
     ----------
     x_ticks : 1D array
@@ -388,30 +437,32 @@ def xticklabels(x_ticks, labelpad=None, size=None, weight=None, ax=None,
         Properties of the bounding box. Default: dict(ec='none', fc='none')
     kwargs : additional arguments
         Passed to ax.annotate
-    
+
     """
-    
+
     plt.draw()
-    
+
     # get ax if necessary
     if ax is None:
         ax = plt.gca()
 
     labelpad, size, weight = _get_label_attr(labelpad, size, weight)
-    
+
     boundary_pc = _get_boundary_platecarree(ax)
-   
+
     # get the x_limit
-    x_lim = boundary_pc.bounds[::2]     
-    
+    x_lim = boundary_pc.bounds[::2]
+
     # remove all points not on map for labeling
     x_label_points = [x for x in x_ticks if x_lim[0] <= x <= x_lim[1]]
-    
+
     if not x_label_points:
-        msg = ('WARN: no points found for xlabel\n'
-               'x_lim is: {:0.2f} to {:0.2f}'.format(x_lim[0], x_lim[1]))
+        msg = (
+            "WARN: no points found for xlabel\n"
+            "x_lim is: {:0.2f} to {:0.2f}".format(x_lim[0], x_lim[1])
+        )
         print(msg)
-    
+
     # get a transform instance that mpl understands
     transform = ccrs.PlateCarree()._as_mpl_transform(ax)
 
@@ -419,16 +470,25 @@ def xticklabels(x_ticks, labelpad=None, size=None, weight=None, ax=None,
     for x in x_label_points:
 
         msg = LONGITUDE_FORMATTER(x)
-        
+
         y = _determine_intersection(boundary_pc, [x, -90], [x, 90])
         if y.size > 0:
-            y = y[0, 1]                
-            
-            h = ax.annotate(msg, xy=(x, y), xycoords=transform, ha=ha, va=va, size=size,
-                            weight=weight, xytext=(0, -labelpad), textcoords='offset points',
-                            bbox=bbox_props, **kwargs)
-    
-        
+            y = y[0, 1]
+
+            ax.annotate(
+                msg,
+                xy=(x, y),
+                xycoords=transform,
+                ha=ha,
+                va=va,
+                size=size,
+                weight=weight,
+                xytext=(0, -labelpad),
+                textcoords="offset points",
+                bbox=bbox_props,
+                **kwargs
+            )
+
 
 def _get_boundary_platecarree(ax):
     # get the bounding box of the map in lat/ lon coordinates
@@ -437,8 +497,9 @@ def _get_boundary_platecarree(ax):
     boundary_poly = sgeom.Polygon(ax.outline_patch.get_path().vertices)
     eroded_boundary = boundary_poly.buffer(-ax.projection.threshold / 100)
     boundary_pc = proj.project_geometry(eroded_boundary, ax.projection)
-    
+
     return boundary_pc
+
 
 def _determine_intersection(polygon, xy1, xy2):
 
@@ -447,9 +508,3 @@ def _determine_intersection(polygon, xy1, xy2):
     ls = sgeom.LineString([p1, p2])
 
     return np.asarray(polygon.boundary.intersection(ls))
-
-
-
-
-
-
