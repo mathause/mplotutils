@@ -89,7 +89,7 @@ def _color_palette(cmap, n_colors):
 # =============================================================================
 
 
-def set_map_layout(axes, width=17.0):
+def set_map_layout(axes, width=17.0, nrow=None, ncol=None):
     """
     set figure height, given width
 
@@ -99,12 +99,20 @@ def set_map_layout(axes, width=17.0):
     ----------
     axes : ndarray of (Geo)Axes
         Array with all axes of the figure.
-    width : float
-        Width of the full figure in cm. Default 17
+    width : float, default: 17
+        Width of the full figure in cm.
+    nrow : integer, default: None
+        manually set the number of rows of subplots. Good when using gridspec.
+        However, subplots must span the same number of gridspec rows & columns.
+        Either none or both of 'nrow' and 'ncol' must be set.
+    ncol : integer, default: None
+        As nrow but for the number of rows.
 
-    ..note: currently only works if all the axes have the same aspect
-    ratio.
+    ..note: only works if all the axes have the same aspect ratio.
     """
+
+    if (nrow is None and ncol is not None) or (nrow is not None and ncol is None):
+        raise ValueError("Must set none or both of 'nrow' and 'ncol'")
 
     if isinstance(axes, plt.Axes):
         ax = axes
@@ -124,8 +132,10 @@ def set_map_layout(axes, width=17.0):
 
     # data ratio is the aspect
     aspect = ax.get_data_ratio()
-    # get geometry tells how many subplots there are
-    nrow, ncol, __ = ax.get_geometry()
+
+    if nrow is None and ncol is None:
+        # get geometry tells how many subplots there are
+        nrow, ncol, __ = ax.get_geometry()
 
     # width of one plot, taking into account
     # left * wf, (1-right) * wf, ncol * wp, (1-ncol) * wp * wspace

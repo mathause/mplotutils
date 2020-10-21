@@ -7,6 +7,8 @@ helper functions for cartopy and matplotlib
 
 ### 0.3.0
 
+ * Added ``nrow`` and ``ncol`` parameters to ``set_map_layout`` for use with a
+   gridspec.
  * Formatted with black and isort, checked with flake8.
 
 
