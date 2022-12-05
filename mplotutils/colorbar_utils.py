@@ -157,15 +157,15 @@ def colorbar(
     """
 
     orientations = ("vertical", "horizontal")
-    msg = "orientation must be 'vertical' or 'horizontal'"
-    assert orientation in orientations, msg
+    if orientation not in orientations:
+        raise ValueError("orientation must be 'vertical' or 'horizontal'")
 
     k = kwargs.keys()
     if ("anchor" in k) or ("panchor" in k):
         msg = (
             "'anchor' and 'panchor' keywords not " "supported, use 'shrink' and 'shift'"
         )
-        raise RuntimeError(msg)
+        raise ValueError(msg)
 
     # ensure 'ax' does not end up in plt.colorbar(**kwargs)
     if "ax" in k:

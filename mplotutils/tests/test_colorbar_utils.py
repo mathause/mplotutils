@@ -363,13 +363,13 @@ def test_colorbar():
     f1, ax1 = plt.subplots()
     h = ax1.pcolormesh([[0, 1]])
 
-    with raises(AssertionError):
+    with raises(ValueError):
         colorbar(h, ax1, orientation="wrong")
 
-    with raises(RuntimeError):
+    with raises(ValueError):
         colorbar(h, ax1, anchor=5)
 
-    with raises(RuntimeError):
+    with raises(ValueError):
         colorbar(h, ax1, panchor=5)
 
     with raises(AssertionError):
