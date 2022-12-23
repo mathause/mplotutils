@@ -1,5 +1,7 @@
 # code by M.Hauser
 
+import warnings
+
 import cartopy.crs as ccrs
 import cartopy.util as cutil
 import matplotlib.pyplot as plt
@@ -39,6 +41,14 @@ def sample_data_map(nlons, nlats):
 # from xarray
 def infer_interval_breaks(x, y, clip=False):
     """find edges of gridcells, given their centers"""
+
+    # TODO: require cartopy >= 0.21 when removing this function
+    warnings.warn(
+        "It's no longer necessary to compute the edges of the array. This is now done"
+        "in matplotlib. This function will be removed from mplotutils in a future "
+        "version.",
+        FutureWarning,
+    )
 
     if len(x.shape) == 1:
         x = _infer_interval_breaks(x)
