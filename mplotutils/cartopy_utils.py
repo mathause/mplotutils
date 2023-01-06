@@ -4,7 +4,7 @@ import numpy as np
 import shapely.geometry as sgeom
 from cartopy.mpl.gridliner import LATITUDE_FORMATTER, LONGITUDE_FORMATTER
 
-from .mpl_utils import _get_label_attr
+from .colormaps import _get_label_attr
 
 # =============================================================================
 

@@ -1,5 +1,4 @@
 import matplotlib as mpl
-import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.colors import from_levels_and_colors
 
@@ -67,7 +66,7 @@ def _color_palette(cmap, n_colors):
         except ValueError:
             # ValueError happens when mpl doesn't like a colormap, try seaborn
             try:
-                from seaborn.apionly import color_palette
+                from seaborn import color_palette
 
                 pal = color_palette(cmap, n_colors=n_colors)
             except (ValueError, ImportError):
@@ -79,70 +78,6 @@ def _color_palette(cmap, n_colors):
         pal = cmap(colors_i)
 
     return pal
-
-
-def set_map_layout(axes, width=17.0, nrow=None, ncol=None):
-    """
-    set figure height, given width
-
-    Needs to be called after all plotting is done.
-
-    Parameters
-    ----------
-    axes : ndarray of (Geo)Axes
-        Array with all axes of the figure.
-    width : float, default: 17
-        Width of the full figure in cm.
-    nrow : integer, default: None
-        manually set the number of rows of subplots. Good when using gridspec.
-        However, subplots must span the same number of gridspec rows & columns.
-        Either none or both of 'nrow' and 'ncol' must be set.
-    ncol : integer, default: None
-        As nrow but for the number of rows.
-
-    Notes
-    -----
-    Only works if all the axes have the same aspect ratio.
-    """
-
-    if (nrow is None and ncol is not None) or (nrow is not None and ncol is None):
-        raise ValueError("Must set none or both of 'nrow' and 'ncol'")
-
-    if isinstance(axes, plt.Axes):
-        ax = axes
-    else:
-        # assumes the first of the axes is representative for all
-        ax = axes.flat[0]
-
-    # read figure data
-    f = ax.get_figure()
-
-    bottom = f.subplotpars.bottom
-    top = f.subplotpars.top
-    left = f.subplotpars.left
-    right = f.subplotpars.right
-    hspace = f.subplotpars.hspace
-    wspace = f.subplotpars.wspace
-
-    # data ratio is the aspect
-    aspect = ax.get_data_ratio()
-
-    if nrow is None and ncol is None:
-        # get geometry tells how many subplots there are
-        nrow, ncol, __, __ = ax.get_subplotspec().get_geometry()
-
-    # width of one plot, taking into account
-    # left * wf, (1-right) * wf, ncol * wp, (1-ncol) * wp * wspace
-    wp = (width - width * (left + (1 - right))) / (ncol + (ncol - 1) * wspace)
-
-    # height of one plot
-    hp = wp * aspect
-
-    # height of figure
-    height = (hp * (nrow + ((nrow - 1) * hspace))) / (1.0 - (bottom + (1 - top)))
-
-    f.set_figwidth(width / 2.54)
-    f.set_figheight(height / 2.54)
 
 
 def _get_label_attr(labelpad, size, weight):
