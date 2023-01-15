@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.4.0 (unreleased)
+
+### Deprecations
+
+### Enhancements
+
+### Bug fixes
+
+### Internal changes
+
 
 ## v0.3.0 (15.01.2023)
 
