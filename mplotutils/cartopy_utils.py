@@ -192,9 +192,6 @@ def ylabel_map(s, *, labelpad=None, size=None, weight=None, y=0.5, ax=None, **kw
     return h
 
 
-# =============================================================================
-
-
 @_deprecate_positional_args("0.3")
 def xlabel_map(s, *, labelpad=None, size=None, weight=None, x=0.5, ax=None, **kwargs):
     """add xlabel to cartopy plot
@@ -255,9 +252,6 @@ def xlabel_map(s, *, labelpad=None, size=None, weight=None, x=0.5, ax=None, **kw
     )
 
     return h
-
-
-# =============================================================================
 
 
 @_deprecate_positional_args("0.3")
