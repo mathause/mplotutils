@@ -7,14 +7,14 @@
 ### Breaking changes
 
 - Removed support for python 3.7 and python 3.8 ([#88](https://github.com/mathause/mplotutils/pull/88)).
-- The minimum versions of some dependencies were changed ([#88](https://github.com/mathause/mplotutils/pull/88) and [#91](https://github.com/mathause/mplotutils/pull/91)).
+- The minimum versions of some dependencies were changed ([#88](https://github.com/mathause/mplotutils/pull/88), [#91](https://github.com/mathause/mplotutils/pull/91), and [#96](https://github.com/mathause/mplotutils/pull/96)).
 
   | Package      | Old   | New     |
   | ------------ | ----- | -----   |
-  | cartopy      | 0.18  | 0.20    |
-  | matplotlib*  | 3.4   | 3.5     |
-  | numpy        | 1.17  | 1.23    |
-  | seaborn      | 1.2   | 1.3     |
+  | cartopy      | 0.18  | 0.21    |
+  | matplotlib*  | 3.4   | 3.6     |
+  | numpy        | 1.17  | 1.22    |
+  | seaborn      | 0.11  | 0.12    |
   | xarray       | 0.15  | 2022.12 |
 
 
