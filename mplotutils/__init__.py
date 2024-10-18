@@ -4,6 +4,7 @@ from importlib.metadata import version as _get_version
 
 from . import _colorbar, cartopy_utils, colormaps
 from ._colorbar import *
+from ._hatch import hatch, hatch_map, hatch_map_global
 from ._savefig import autodraw
 from .cartopy_utils import *
 from .colormaps import *
