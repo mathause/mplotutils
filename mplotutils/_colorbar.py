@@ -211,7 +211,10 @@ def colorbar(
     if not all(f == ax.get_figure() for ax in axs):
         raise TypeError("All passed axes must belong to the same figure")
 
+    gca = plt.gca()
     cbax = _get_cbax(f)
+    # ensure mpu.colorbar does not change the current axes
+    plt.sca(gca)
 
     cbar = plt.colorbar(mappable, orientation=orientation, cax=cbax, **kwargs)
 
