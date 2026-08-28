@@ -1,7 +1,9 @@
+import cartopy
 import cartopy.crs as ccrs
 import numpy as np
 import pytest
 import shapely
+from packaging.version import Version
 
 import mplotutils as mpu
 
@@ -61,7 +63,11 @@ def test_xticklabels_robinson(pass_ax):
         mpu.xticklabels(lon, ax=ax_, size=8)
 
         # changed value with proj 9.8; https://github.com/mpytools/mplotutils/issues/202
-        y_pos = -89.845635
+        # reverted with https://github.com/SciTools/cartopy/pull/2653
+        if Version(cartopy.__version__) > Version("0.25.0"):
+            y_pos = -89.99  # 6460
+        else:
+            y_pos = -89.845635
 
         # two elements are not added because they are beyond the map limits
         lon = lon[1:-1]
